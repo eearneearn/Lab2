@@ -47,12 +47,20 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 typedef struct
 {
-	uint16_t in0;
+	uint16_t voltage;
 	uint16_t temp;
 
 } adcDMAStructure;
 
 adcDMAStructure adcDMA[10];
+
+uint16_t AVG_voltage = 0;
+uint16_t AVG_temp = 0;
+uint16_t sum_temp = 0;
+uint16_t sum_voltage = 0;
+int Vin_mV = 0;
+float Vin_mV_T = 0;
+int temp_K = 0;
 
 /* USER CODE END PV */
 
@@ -110,6 +118,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  static uint32_t timestamp = 0;
+	  if(HAL_GetTick() >= timestamp){
+		  timestamp = HAL_GetTick() + 1000;
+	  }
+
+	  for (int i = 0; i < 10; ++i) {
+		  sum_voltage += adcDMA[i].voltage;
+		  sum_temp += adcDMA[i].temp;
+	}
+	  AVG_voltage = sum_voltage/10;
+	  AVG_temp = sum_temp/10;
+	  Vin_mV = ((AVG_voltage*3.3)/4095)*1000;
+	  Vin_mV_T = ((AVG_temp*3.3)/4095);
+	  temp_K = ((Vin_mV_T - 0.76)/0.0025)+25+273;
+	  sum_voltage = 0;
+	  sum_temp = 0;
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -318,6 +343,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 //		HAL_ADC_Start_IT(&hadc1);
 		HAL_ADC_Start_DMA(&hadc1, adcDMA, 20);
 	}
+}
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+//	adcRawData = HAL_ADC_GetValue(&hadc1);
 }
 
 /* USER CODE END 4 */
