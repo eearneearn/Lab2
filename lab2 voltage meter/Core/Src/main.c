@@ -58,9 +58,9 @@ uint16_t AVG_voltage = 0;
 uint16_t AVG_temp = 0;
 uint16_t sum_temp = 0;
 uint16_t sum_voltage = 0;
-int Vin_mV = 0;
-float Vin_mV_T = 0;
-int temp_K = 0;
+uint16_t Vin_mV = 0;
+uint16_t Vin_mV_T = 0;
+uint16_t temp_K = 0;
 
 /* USER CODE END PV */
 
@@ -129,9 +129,9 @@ int main(void)
 	}
 	  AVG_voltage = sum_voltage/10;
 	  AVG_temp = sum_temp/10;
-	  Vin_mV = ((AVG_voltage*3.3)/4095)*1000;
-	  Vin_mV_T = ((AVG_temp*3.3)/4095);
-	  temp_K = ((Vin_mV_T - 0.76)/0.0025)+25+273;
+	  Vin_mV = ((AVG_voltage*3.3)/4095)*1000*2;
+	  Vin_mV_T = ((AVG_temp*3.3)/4095)*1000;
+	  temp_K = ((Vin_mV_T - 760)/25)+25+273;
 	  sum_voltage = 0;
 	  sum_temp = 0;
 
